@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: argo-server
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: argo-server
@@ -22,15 +23,17 @@ spec:
             capabilities:
               drop:
                 - ALL
-          args: [ server ]
-          env: []
+          args: [ server, --auth-mode, server ]
+          env:
+            - name: ARGO_SECURE
+              value: 'false'
           ports:
             - name: web
               containerPort: 2746
           readinessProbe:
             httpGet:
               port: 2746
-              scheme: HTTPS
+              scheme: HTTP
               path: /
             initialDelaySeconds: 10
             periodSeconds: 20
@@ -42,5 +45,12 @@ spec:
           emptyDir: { }
       securityContext:
         runAsNonRoot: true
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: cloud.google.com/gke-spot
+                    operator: In
+                    values:
+                      - "true"

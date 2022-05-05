@@ -47,5 +47,12 @@ spec:
             timeoutSeconds: 30
       securityContext:
         runAsNonRoot: true
-      nodeSelector:
-        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: cloud.google.com/gke-spot
+                    operator: In
+                    values:
+                      - "true"

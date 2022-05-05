@@ -5,5 +5,12 @@ resources:
 - ../base
 - ./workflow-controller-rbac
 - ./argo-server-rbac
+- ./ingress.yaml
 
 namespace: argo
+
+images:
+  - name: quay.io/argoproj/workflow-controller
+    newTag: v3.3.4
+  - name: quay.io/argoproj/argocli
+    newTag: v3.3.4
